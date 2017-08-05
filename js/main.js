@@ -13,11 +13,21 @@
    // 정의를 내리는 부분
    function _init() {
        _sb.$topCard = $('.top-card');
+       _sb.$header = $('header');
+       _sb.headerHeight = _sb.$header.height();
+       _sb.$search = $('.search');
+       _sb.$searchInput = _sb.$search.find('input');
+       _sb.$searchImg = _sb.$search.find('img');
+       _sb.searchValue = '';
+       _sb.ENTER_KEY = 13;                       //상수를 만들 때 대문자로 씀. 상수 : 절대 변하지 않은 변수 값!
    }
 
-   //기능을 실행하는 부분
+   //기능을 실행하는 부분 -> function 실행함수이름 설정 -> 이 안에 넣으면 실행됨
    function _initEvent() {
        toggleTopCard();
+       megaMenuHandler();
+       searchHandler();
+       firstAnimations();
    }
 
    function toggleTopCard() {
@@ -32,12 +42,126 @@
    }
 
    function animateToggleTopCardBtn() {
-       TweenMax.to('.toggle-top-card .cup', 1.5, {
-           y: -30,
-           repeat: -1,
-           yoyo: true
+       //SET
+       TweenMax.killChildTweensOf('.toggle-top-card');
+       var cup = '.toggle-top-card .cup';
+       var star = '.toggle-top-card .star';
+
+       TweenMax.set(cup, { y: 44});
+       TweenMax.set(star, { y: -44, opacity: .6 });
+
+       //PLAY
+       TweenMax.to(cup, 1.5, { y: 5, ease: Back.easeOut.config(2) });
+
+       var ani =  new TimelineMax();
+       ani.to(star, .8, { x: -12, y: -4, ease: Back.easeOut.config(2) })
+           .to(star, .8, { x: -2, y: 0, ease: Back.easeOut.config(2) })
+           .to(star, .4, { opacity: 1, repeat: 7, yoyo: true }, '-=1.6'); //repeat, yoyo 많이 사용함. -=1.6 은 .8 +.8 더한 값
+
+   }
+
+   function megaMenuHandler() {
+       $('.main-menu > ul > li').on({
+           mouseenter: function () {
+               openMegaMenu($(this));
+           },
+           mouseleave: function() {
+               closeMegaMenu($(this));
+           }
        });
    }
 
+   function openMegaMenu($this) {
+       $this.addClass('on');
+
+       var megaHeight = $this.find('.mega-menu').height();
+
+       _sb.$header
+           .css({ borderBottomColor: '#2c2a29' })
+           .stop()
+           .animate({
+               height: _sb.headerHeight + megaHeight
+           }, 250);
+   }
+   function closeMegaMenu($this) {
+       $this.removeClass('on');
+
+       _sb.$header
+           .css({ borderBottomColor: '#c8c8c8' })
+           .stop()
+           .animate({
+               height: _sb.headerHeight
+           }, 250);
+   }
+
+   function searchHandler() {
+       _sb.$searchInput.on({
+           focus: function () {
+              focusSearch();
+           },
+           blur: function () {
+              blurSearch();
+           },
+           keydown: function (event) {
+               submitSearch($(this), event);
+           }
+       });
+
+       _sb.$searchImg.on({
+           click:function () {
+               _sb.$searchInput.focus();
+           }
+       });
+   }
+
+   //검색창에 마우스를 올렸을 때
+   function focusSearch() {
+       console.log('dafkljasdlfj')
+       _sb.$search
+           .stop()
+           .animate({ width: 182 }, 600);
+       _sb.$searchInput
+           .stop()
+           .animate({ width: 182 }, 600)
+           .attr({ placeholder: '통합검색' });
+       _sb.$searchImg.stop(false, true).fadeOut(600);
+
+       if (_sb.searchValue !== '') {
+           _sb.$searchInput.val(_sb.searchValue);
+       }
+   }
+
+   //검색창에서 마우스를 떼었을 때
+   function blurSearch() {
+       _sb.$search
+           .stop()
+           .animate({ width: 38 }, 600);
+       _sb.searchValue = _sb.$searchInput.val();  //코드 순서가 중요!
+       _sb.$searchInput
+           .stop()
+           .animate({ width: 38 }, 600)
+           .attr({ placeholder: '' })
+           .val('');                                //저장하고 비어있는 문자로 지워라
+       _sb.$searchImg.stop(false, true).fadeIn(600);
+   }
+
+   function submitSearch($this, event) {
+       if (event.which === 13) {
+           event.preventDefault();
+           console.log( $this.val() );
+       }
+       switch (event.which) {
+           case _sb-ENTER_KEY:
+               event.preventDefault();
+               console.log( $this.val() );
+           break;
+       }
+   }
+
+   function firstAnimations() {
+       $('.visual .fade-in').each(function (index) {
+          TweenMax.to(this, 1, { opacity: 1, delay: (index + 1) * .7 });   // 하나마다 + 1 * .7 로 하나씩 순차적으로 나오도록 함!
+       });
+   }
 
 }(jQuery)); //즉시 실행 모드
