@@ -28,6 +28,7 @@
        megaMenuHandler();
        searchHandler();
        firstAnimations();
+       sliderHandler();
    }
 
    function toggleTopCard() {
@@ -161,6 +162,25 @@
    function firstAnimations() {
        $('.visual .fade-in').each(function (index) {
           TweenMax.to(this, 1, { opacity: 1, delay: (index + 1) * .7 });   // 하나마다 + 1 * .7 로 하나씩 순차적으로 나오도록 함!
+       });
+   }
+
+   function sliderHandler () {
+       $('.notice-line .slider ul').bxSlider({
+           mode: 'vertical',    // 기본 수평('horizontal')으로 되어있으므로 모드로 설정 바꿔줌
+           pager: false,       // 페이징 숨김
+           controls: false,    // prev, next 버튼
+           auto: true,
+           pause: 5000          // 5초(5000)에 한번씩
+       });
+
+       $('.promotion .slider ul').bxSlider({
+            auto: true,
+            minSlides: 1,
+            maxSlides: 3,      //최대 슬라이드 개수 3개
+            moveSlides: 1,     //몇개씩 움직일 것인가 - 1개씩
+            slideWidth: 819,
+            slideMargin: 10    //슬라이드 사이에 간격
        });
    }
 
