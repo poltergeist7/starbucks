@@ -179,13 +179,21 @@
        });
 
        _sb.promotionSlider = $('.promotion .slider ul').bxSlider({
-            auto: true,
-            pause: 5000,
-            minSlides: 1,
-            maxSlides: 3,      //최대 슬라이드 개수 3개
-            moveSlides: 1,     //몇개씩 움직일 것인가 - 1개씩
-            slideWidth: 819,
-            slideMargin: 10,    
+           pager: true,
+           controls: false,            // prev, next 버튼 사용 유무
+           autoControls: true,         // 일시정지, 재생 버튼 사용 유무
+           pagerSelector: '.promotion .pager',
+           autoControlsSelector: '.promotion .auto-controls',
+           autoControlsCombine: true,          //   start와 stop 중에 한개만 보여줌
+           startText: '',
+           stopText: '',
+           auto: true,
+           pause: 5000,
+           minSlides: 1,
+           maxSlides: 3,      //최대 슬라이드 개수 3개
+           moveSlides: 1,     //몇개씩 움직일 것인가 - 1개씩
+           slideWidth: 819,
+           slideMargin: 10,
            onSliderLoad: function () {
                 $('.promotion .slider li').removeClass('active');
                 $('.promotion .slider li.first').addClass('active');
