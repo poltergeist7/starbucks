@@ -20,15 +20,19 @@
        _sb.$searchImg = _sb.$search.find('img');
        _sb.searchValue = '';
        _sb.ENTER_KEY = 13;                       //상수를 만들 때 대문자로 씀. 상수 : 절대 변하지 않은 변수 값!
+       _sb.$promotion = $('.promotion .inner');
+       _sb.$togglePromotionBtn = $('.notice-line .toggle-promotion');
    }
 
-   //기능을 실행하는 부분 -> function 실행함수이름 설정 -> 이 안에 넣으면 실행됨
+   // 기능을 실행하는 부분 -> function 실행함수이름 설정 -> 이 안에 넣으면 실행됨
    function _initEvent() {
        toggleTopCard();
        megaMenuHandler();
        searchHandler();
        firstAnimations();
        sliderHandler();
+       togglePromotionHandler();
+       playTogglePromotionBtn();
    }
 
    function toggleTopCard() {
@@ -117,7 +121,7 @@
 
    //검색창에 마우스를 올렸을 때
    function focusSearch() {
-       console.log('dafkljasdlfj')
+       // console.log('dafkljasdlfj')
        _sb.$search
            .stop()
            .animate({ width: 182 }, 600);
@@ -174,14 +178,81 @@
            pause: 5000          // 5초(5000)에 한번씩
        });
 
-       $('.promotion .slider ul').bxSlider({
+       _sb.promotionSlider = $('.promotion .slider ul').bxSlider({
             auto: true,
+            pause: 5000,
             minSlides: 1,
             maxSlides: 3,      //최대 슬라이드 개수 3개
             moveSlides: 1,     //몇개씩 움직일 것인가 - 1개씩
             slideWidth: 819,
-            slideMargin: 10    //슬라이드 사이에 간격
+            slideMargin: 10,    
+           onSliderLoad: function () {
+                $('.promotion .slider li').removeClass('active');
+                $('.promotion .slider li.first').addClass('active');
+           },
+           onSlideAfter: function ($slideElement, oldIndex, newIndex) {
+                $('.promotion .slider li').removeClass('active');
+                $slideElement.addClass('active');
+           }
+       });
+
+       $('.promotion .prev').on('click', function () {
+           _sb.promotionSlider.goToPrevSlide();
+           _sb.promotionSlider.stopAuto();
+       });
+       $('.promotion .next').on('click', function () {
+           _sb.promotionSlider.goToNextSlide();
+           _sb.promotionSlider.stopAuto();
        });
    }
+
+   function togglePromotionHandler() {
+       _sb.$togglePromotionBtn.on('click', function () {
+          if (_sb.$promotion.data('opened') === 'opened') {
+              closePromotion();
+          } else {
+              openPromotion();
+          }
+       });
+   }
+
+   function openPromotion() {
+     _sb.$promotion
+         .stop()
+         .slideDown(400)
+         .data({
+             opened: 'opened'
+         });
+     _sb.promotionSlider.reloadSlider();
+     pauseTogglePromotionBtn();              // 프로모션 내용물이 보이면 멈추도록
+   }
+
+    function closePromotion() {
+        _sb.$promotion
+            .stop()
+            .slideUp(400, function() {
+                _sb.promotionSlider.destroySlider();
+            })                              // 콜백함수 사용 slideUp 이 실행된 후 사용 -> destroySlider
+            .data({
+                opened: ''
+            });
+        playTogglePromotionBtn();             // 프로모션 내용이 닫히면 화살표가 다시 움직이도록 설정
+    }
+
+    function playTogglePromotionBtn() {
+       TweenMax.set(_sb.$togglePromotionBtn, { scale: .9 });
+       TweenMax.to(_sb.$togglePromotionBtn, .5, { rotation: 0 });
+       _sb.toggleZoom = TweenMax.to(_sb.$togglePromotionBtn, 1, {
+           scale: 1.1,
+           repeat: -1,
+           yoyo: true
+       });
+    }
+
+    function pauseTogglePromotionBtn() {
+       TweenMax.set(_sb.$togglePromotionBtn, { scale: 1 });
+       TweenMax.to(_sb.$togglePromotionBtn, .5, { rotation: -180 });     //  -180deg 약자
+       _sb.toggleZoom.pause();        //pause() <- TweenMax 에 들어있음 (GSOCK 참조)
+    }
 
 }(jQuery)); //즉시 실행 모드
