@@ -22,6 +22,7 @@
        _sb.ENTER_KEY = 13;                       //상수를 만들 때 대문자로 씀. 상수 : 절대 변하지 않은 변수 값!
        _sb.$promotion = $('.promotion .inner');
        _sb.$togglePromotionBtn = $('.notice-line .toggle-promotion');
+       _sb.currentSecIndex = 0;
    }
 
    // 기능을 실행하는 부분 -> function 실행함수이름 설정 -> 이 안에 넣으면 실행됨
@@ -33,6 +34,8 @@
        sliderHandler();
        togglePromotionHandler();
        playTogglePromotionBtn();
+       windowScroll();     //완성본 checkLocateScroll 로 되어있음
+       checkSectionOffsetTop();
    }
 
    function toggleTopCard() {
@@ -280,5 +283,43 @@
            ease: Power0.easeNone
        });
     }
+
+    function windowScroll() {
+       $(window).on('scroll', function () {
+           _sb.scrollLocate = $(this).scrollTop() + ($(this).height() / 2);
+
+           checkCurrentSection();
+       });
+    }
+
+    function checkCurrentSection() {
+       var secLength = _sb.secOffsetTop.length;
+
+       for (var i = 0;  i < secLength; i++) {
+           if (_sb.scrollLocate >= _sb.secOffsetTop[i] && _sb.scrollLocate < _sb.secOffsetTop[i + 1]) {
+               if (_sb.currentSecIndex === i) {
+                   return;   // 함수를 종료
+               } else {
+                   _sb.currentSecIndex = i;   // 현재 섹션이 몇번인지 갱신해주는 코드
+                                      
+                   changeSectionHandler();
+               }
+           }
+       }
+    }
+
+    function changeSectionHandler() {
+        console.log('현재 섹션은 ' + _sb.currentSecIndex);   // 난이도 상
+    }
+
+    function checkSectionOffsetTop() {
+       _sb.secOffsetTop = [];
+       $('.section').each(function () {
+           _sb.secOffsetTop.push(
+               $(this).offset().top
+           );
+       });
+       console.log(_sb.secOffsetTop) ;
+   }
 
 }(jQuery)); //즉시 실행 모드
