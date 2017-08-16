@@ -38,6 +38,7 @@
        checkSectionOffsetTop();
        setReturnToPositon();
        toTopBtnHandler();
+       pluginNiceScroll();
    }
 
    function toggleTopCard() {
@@ -221,6 +222,29 @@
            _sb.promotionSlider.goToNextSlide();
            _sb.promotionSlider.stopAuto();
        });
+
+       _sb.awardSlider = $('.award .slider ul').bxSlider({
+           pager: false,
+           controls: false,
+           auto: true,
+           pause: 3000,
+           minSlides: 5,
+           maxSlides: 5,
+           moveSlides: 1,
+           slideWidth: 192,
+           slideMargin: 35
+       });
+
+       $('.award .prev').on('click', function () {
+           _sb.awardSlider.goToPrevSlide();
+           _sb.awardSlider.stopAuto();   // 클릭시 자동 슬라이드 기능이 멈춤
+           restartAwardSlider();
+       });
+       $('.award .next').on('click', function () {
+           _sb.awardSlider.goToNextSlide();
+           _sb.awardSlider.stopAuto();
+           restartAwardSlider();
+       });
    }
 
    function togglePromotionHandler() {
@@ -236,7 +260,9 @@
    function openPromotion() {
      _sb.$promotion
          .stop()
-         .slideDown(400)
+         .slideDown(400, function () {
+             $('html').getNiceScroll().resize();
+         })
          .data({
              opened: 'opened'
          });
@@ -270,6 +296,12 @@
        TweenMax.set(_sb.$togglePromotionBtn, { scale: 1 });
        TweenMax.to(_sb.$togglePromotionBtn, .5, { rotation: -180 });     //  -180deg 약자
        _sb.toggleZoom.pause();        //pause() <- TweenMax 에 들어있음 (GSOCK 참조)
+    }
+
+    function restartAwardSlider() {
+        setTimeout(function() {
+            _sb.awardSlider.startAuto();
+        }, 4000); // 4초가 지난 다음에 익명 함수가 실행
     }
 
     function random(min, max) {
@@ -392,5 +424,14 @@
         $('#to-top').stop(false, true).fadeOut(400);
     }
 
+    function pluginNiceScroll() {
+       $('html').niceScroll({
+           cursorcolor: 'rgba(0,0,0,.7)', //보통 카멜법으로 씀
+           cursorwidth: 10,
+           cursorborder: 'none',
+           cursorborderradius: 0,
+           zindex: 9999
+       });
+    }
 
 }(jQuery)); //즉시 실행 모드
